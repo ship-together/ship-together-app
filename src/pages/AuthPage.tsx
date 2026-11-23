@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ArrowRight, CheckCircle2, KeyRound, Mail } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { APP_LOGO_URL } from '../types/domain';
 
 type AuthMode = 'login' | 'signup' | 'reset';
 
@@ -106,6 +107,13 @@ export function AuthPage() {
     <div className="max-w-[1200px] mx-auto px-4 sm:px-6 py-12 sm:py-20">
       <div className="max-w-md mx-auto bg-[#171714] border border-[#292923] rounded-xl p-6 sm:p-8">
         <div className="text-center">
+          <div className="w-14 h-14 mx-auto mb-4 rounded-full overflow-hidden border border-[#292923] bg-white flex items-center justify-center">
+            <img
+              src={APP_LOGO_URL}
+              alt="Ship Together logo"
+              className="w-full h-full object-cover scale-[1.26]"
+            />
+          </div>
           <h1 className="font-display text-2xl font-bold text-white tracking-tight">
             {mode === 'login'
               ? 'Welcome back'

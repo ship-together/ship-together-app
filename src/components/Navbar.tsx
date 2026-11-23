@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { APP_LOGO_URL } from '../types/domain';
 import { SafeImage } from './SafeImage';
 
 const NAV_ITEMS = [
@@ -26,12 +27,19 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-40 bg-[#090909]/95 backdrop-blur-md border-b border-[#292923]">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-8">
-        {/* Zone 1: Single clean wordmark */}
+        {/* Zone 1: Brand logo + wordmark */}
         <Link
           to="/"
-          className="font-display text-lg font-bold tracking-tight text-white whitespace-nowrap shrink-0 hover:text-[#F59E0B] transition-colors"
+          className="flex items-center gap-2.5 font-display text-lg font-bold tracking-tight text-white whitespace-nowrap shrink-0 hover:text-[#F59E0B] transition-colors"
         >
-          Ship Together
+          <span className="w-8 h-8 rounded-full overflow-hidden border border-[#292923] bg-white shrink-0 flex items-center justify-center">
+            <img
+              src={APP_LOGO_URL}
+              alt="Ship Together logo"
+              className="w-full h-full object-cover scale-[1.26]"
+            />
+          </span>
+          <span>Ship Together</span>
         </Link>
 
         {/* Zone 2: 5 concise single-line text links */}

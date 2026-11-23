@@ -97,6 +97,9 @@ export interface CollaborationApplication {
   updatedAt: Timestamp | null;
 }
 
+export const APP_LOGO_URL =
+  '/assets/aistudio/watermarked_img_17437407963623151752_553ed036.jpg';
+
 export const HERO_DESK_IMAGE = '/images/hero_builders_desk_1795295593852.jpg';
 
 export const PRESET_PROJECT_COVERS: { label: string; url: string }[] = [
