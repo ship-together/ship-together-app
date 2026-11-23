@@ -1,0 +1,403 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global default-deny safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerified() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isValidUsername(u) {
+      return u is string && u.size() >= 3 && u.size() <= 30 && u.matches('^[a-z0-9_]+$');
+    }
+
+    function isValidString(val, minLen, maxLen) {
+      return val is string && val.size() >= minLen && val.size() <= maxLen;
+    }
+
+    function isValidOptionalUrl(val, maxLen) {
+      return val is string && val.size() <= maxLen && (val == '' || val.matches('^https?://.*'));
+    }
+
+    function isValidImageUrl(val, maxLen) {
+      return val is string && val.size() <= maxLen && (
+        val == '' ||
+        val.matches('^https?://.*') ||
+        val.matches('^/images/[a-zA-Z0-9_\\-]+\\.jpg$') ||
+        val.matches('^/src/assets/images/[a-zA-Z0-9_\\-]+\\.jpg$') ||
+        val.matches('^data:image/(webp|jpeg|png|gif);base64,[A-Za-z0-9+/=]+$')
+      );
+    }
+
+    function isValidStringArray(arr, minItems, maxItems) {
+      return arr is list
+        && arr.size() >= minItems
+        && arr.size() <= maxItems
+        && (arr.size() == 0 || (arr[0] is string && arr[0].size() >= 1 && arr[0].size() <= 40));
+    }
+
+    function isValidProfile(data, expectedUid) {
+      return data.keys().hasAll([
+          'userId', 'username', 'displayName', 'avatarUrl', 'bio',
+          'location', 'skills', 'githubUrl', 'portfolioUrl', 'createdAt', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'userId', 'username', 'displayName', 'avatarUrl', 'bio',
+          'location', 'skills', 'githubUrl', 'portfolioUrl', 'createdAt', 'updatedAt'
+        ])
+        && data.userId == expectedUid
+        && isValidUsername(data.username)
+        && isValidString(data.displayName, 1, 60)
+        && isValidImageUrl(data.avatarUrl, 280000)
+        && isValidString(data.bio, 0, 400)
+        && isValidString(data.location, 0, 80)
+        && isValidStringArray(data.skills, 0, 15)
+        && isValidOptionalUrl(data.githubUrl, 300)
+        && isValidOptionalUrl(data.portfolioUrl, 300)
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidPost(data) {
+      return data.keys().hasAll([
+          'authorId', 'authorUsername', 'authorDisplayName', 'authorAvatarUrl',
+          'content', 'projectUrl', 'likesCount', 'createdAt', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'authorId', 'authorUsername', 'authorDisplayName', 'authorAvatarUrl',
+          'content', 'projectUrl', 'likesCount', 'createdAt', 'updatedAt'
+        ])
+        && isValidId(data.authorId)
+        && isValidUsername(data.authorUsername)
+        && isValidString(data.authorDisplayName, 1, 60)
+        && isValidImageUrl(data.authorAvatarUrl, 280000)
+        && isValidString(data.content, 1, 600)
+        && isValidOptionalUrl(data.projectUrl, 300)
+        && data.likesCount is int
+        && data.likesCount >= 0
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidComment(data, expectedPostId) {
+      return data.keys().hasAll([
+          'postId', 'authorId', 'authorUsername', 'authorDisplayName',
+          'authorAvatarUrl', 'content', 'createdAt'
+        ])
+        && data.keys().hasOnly([
+          'postId', 'authorId', 'authorUsername', 'authorDisplayName',
+          'authorAvatarUrl', 'content', 'createdAt'
+        ])
+        && data.postId == expectedPostId
+        && isValidId(data.authorId)
+        && isValidUsername(data.authorUsername)
+        && isValidString(data.authorDisplayName, 1, 60)
+        && isValidImageUrl(data.authorAvatarUrl, 280000)
+        && isValidString(data.content, 1, 500)
+        && data.createdAt is timestamp;
+    }
+
+    function isValidProject(data) {
+      return data.keys().hasAll([
+          'ownerId', 'ownerUsername', 'ownerDisplayName', 'ownerAvatarUrl',
+          'name', 'description', 'coverImageUrl', 'liveDemoUrl', 'githubUrl',
+          'tags', 'status', 'createdAt', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'ownerId', 'ownerUsername', 'ownerDisplayName', 'ownerAvatarUrl',
+          'name', 'description', 'coverImageUrl', 'liveDemoUrl', 'githubUrl',
+          'tags', 'status', 'createdAt', 'updatedAt'
+        ])
+        && isValidId(data.ownerId)
+        && isValidUsername(data.ownerUsername)
+        && isValidString(data.ownerDisplayName, 1, 60)
+        && isValidImageUrl(data.ownerAvatarUrl, 280000)
+        && isValidString(data.name, 2, 100)
+        && isValidString(data.description, 10, 600)
+        && isValidImageUrl(data.coverImageUrl, 280000)
+        && isValidOptionalUrl(data.liveDemoUrl, 300)
+        && isValidOptionalUrl(data.githubUrl, 300)
+        && isValidStringArray(data.tags, 1, 8)
+        && data.status in ['Building', 'Launched', 'Completed']
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidCollaborationRequest(data) {
+      return data.keys().hasAll([
+          'ownerId', 'ownerUsername', 'ownerDisplayName', 'ownerAvatarUrl',
+          'title', 'description', 'skillsNeeded', 'projectName', 'projectUrl',
+          'collaborationType', 'status', 'createdAt', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'ownerId', 'ownerUsername', 'ownerDisplayName', 'ownerAvatarUrl',
+          'title', 'description', 'skillsNeeded', 'projectName', 'projectUrl',
+          'collaborationType', 'status', 'createdAt', 'updatedAt'
+        ])
+        && isValidId(data.ownerId)
+        && isValidUsername(data.ownerUsername)
+        && isValidString(data.ownerDisplayName, 1, 60)
+        && isValidImageUrl(data.ownerAvatarUrl, 280000)
+        && isValidString(data.title, 3, 120)
+        && isValidString(data.description, 10, 1200)
+        && isValidStringArray(data.skillsNeeded, 1, 10)
+        && isValidString(data.projectName, 0, 100)
+        && isValidOptionalUrl(data.projectUrl, 300)
+        && data.collaborationType in ['Open Source', 'Startup', 'Side Project', 'Learning Together']
+        && data.status in ['Open', 'Closed']
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidCollaborationApplication(data) {
+      return data.keys().hasAll([
+          'requestId', 'requestTitle', 'opportunityOwnerId', 'applicantId',
+          'applicantUsername', 'applicantDisplayName', 'applicantAvatarUrl',
+          'message', 'skills', 'status', 'createdAt', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'requestId', 'requestTitle', 'opportunityOwnerId', 'applicantId',
+          'applicantUsername', 'applicantDisplayName', 'applicantAvatarUrl',
+          'message', 'skills', 'status', 'createdAt', 'updatedAt'
+        ])
+        && isValidId(data.requestId)
+        && isValidString(data.requestTitle, 1, 120)
+        && isValidId(data.opportunityOwnerId)
+        && isValidId(data.applicantId)
+        && isValidUsername(data.applicantUsername)
+        && isValidString(data.applicantDisplayName, 1, 60)
+        && isValidImageUrl(data.applicantAvatarUrl, 280000)
+        && isValidString(data.message, 10, 600)
+        && isValidStringArray(data.skills, 0, 10)
+        && data.status in ['Pending', 'Accepted', 'Rejected']
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    // Connection validation document
+    match /test/{docId} {
+      allow get: if docId == 'connection';
+    }
+
+    // Public developer profiles (no PII)
+    match /profiles/{userId} {
+      allow get, list: if true;
+      allow create: if isVerified()
+        && isValidId(userId)
+        && userId == request.auth.uid
+        && isValidProfile(incoming(), userId)
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+      allow update: if isVerified()
+        && isValidId(userId)
+        && userId == request.auth.uid
+        && isValidProfile(incoming(), userId)
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && incoming().diff(existing()).affectedKeys().hasOnly([
+          'username', 'displayName', 'avatarUrl', 'bio', 'location',
+          'skills', 'githubUrl', 'portfolioUrl', 'updatedAt'
+        ]);
+      allow delete: if false;
+    }
+
+    // Username uniqueness claims
+    match /usernames/{username} {
+      allow get: if isValidUsername(username);
+      allow list: if false;
+      allow create: if isVerified()
+        && isValidUsername(username)
+        && incoming().keys().hasAll(['userId', 'createdAt'])
+        && incoming().keys().hasOnly(['userId', 'createdAt'])
+        && incoming().userId == request.auth.uid
+        && incoming().createdAt == request.time
+        && !exists(/databases/$(database)/documents/usernames/$(username));
+      allow delete: if isVerified()
+        && isValidUsername(username)
+        && existing().userId == request.auth.uid;
+    }
+
+    // Community posts
+    match /posts/{postId} {
+      allow get, list: if true;
+      allow create: if isVerified()
+        && isValidId(postId)
+        && isValidPost(incoming())
+        && incoming().authorId == request.auth.uid
+        && incoming().likesCount == 0
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+      allow update: if isVerified()
+        && isValidId(postId)
+        && isValidPost(incoming())
+        && incoming().authorId == existing().authorId
+        && incoming().createdAt == existing().createdAt
+        && (
+          (
+            existing().authorId == request.auth.uid
+            && incoming().likesCount == existing().likesCount
+            && incoming().updatedAt == request.time
+            && incoming().diff(existing()).affectedKeys().hasOnly([
+              'content', 'projectUrl', 'authorUsername', 'authorDisplayName', 'authorAvatarUrl', 'updatedAt'
+            ])
+          ) ||
+          (
+            incoming().diff(existing()).affectedKeys().hasOnly(['likesCount'])
+            && incoming().likesCount == existing().likesCount + 1
+            && !exists(/databases/$(database)/documents/posts/$(postId)/likes/$(request.auth.uid))
+            && existsAfter(/databases/$(database)/documents/posts/$(postId)/likes/$(request.auth.uid))
+          ) ||
+          (
+            incoming().diff(existing()).affectedKeys().hasOnly(['likesCount'])
+            && incoming().likesCount == existing().likesCount - 1
+            && incoming().likesCount >= 0
+            && exists(/databases/$(database)/documents/posts/$(postId)/likes/$(request.auth.uid))
+            && !existsAfter(/databases/$(database)/documents/posts/$(postId)/likes/$(request.auth.uid))
+          )
+        );
+      allow delete: if isVerified()
+        && isValidId(postId)
+        && existing().authorId == request.auth.uid;
+
+      match /likes/{userId} {
+        allow get, list: if true;
+        allow create: if isVerified()
+          && isValidId(postId)
+          && isValidId(userId)
+          && userId == request.auth.uid
+          && exists(/databases/$(database)/documents/posts/$(postId))
+          && incoming().keys().hasAll(['postId', 'userId', 'createdAt'])
+          && incoming().keys().hasOnly(['postId', 'userId', 'createdAt'])
+          && incoming().postId == postId
+          && incoming().userId == request.auth.uid
+          && incoming().createdAt == request.time
+          && getAfter(/databases/$(database)/documents/posts/$(postId)).data.likesCount == get(/databases/$(database)/documents/posts/$(postId)).data.likesCount + 1;
+        allow delete: if isVerified()
+          && isValidId(postId)
+          && isValidId(userId)
+          && userId == request.auth.uid
+          && getAfter(/databases/$(database)/documents/posts/$(postId)).data.likesCount == get(/databases/$(database)/documents/posts/$(postId)).data.likesCount - 1;
+      }
+
+      match /comments/{commentId} {
+        allow get, list: if true;
+        allow create: if isVerified()
+          && isValidId(postId)
+          && isValidId(commentId)
+          && exists(/databases/$(database)/documents/posts/$(postId))
+          && isValidComment(incoming(), postId)
+          && incoming().authorId == request.auth.uid
+          && incoming().createdAt == request.time;
+        allow update: if false;
+        allow delete: if isVerified()
+          && isValidId(postId)
+          && isValidId(commentId)
+          && existing().authorId == request.auth.uid;
+      }
+    }
+
+    // Showcased projects
+    match /projects/{projectId} {
+      allow get, list: if true;
+      allow create: if isVerified()
+        && isValidId(projectId)
+        && isValidProject(incoming())
+        && incoming().ownerId == request.auth.uid
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+      allow update: if isVerified()
+        && isValidId(projectId)
+        && isValidProject(incoming())
+        && existing().ownerId == request.auth.uid
+        && incoming().ownerId == existing().ownerId
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && incoming().diff(existing()).affectedKeys().hasOnly([
+          'name', 'description', 'coverImageUrl', 'liveDemoUrl', 'githubUrl',
+          'tags', 'status', 'ownerUsername', 'ownerDisplayName', 'ownerAvatarUrl', 'updatedAt'
+        ]);
+      allow delete: if isVerified()
+        && isValidId(projectId)
+        && existing().ownerId == request.auth.uid;
+    }
+
+    // Collaboration requests
+    match /collaboration_requests/{requestId} {
+      allow get, list: if true;
+      allow create: if isVerified()
+        && isValidId(requestId)
+        && isValidCollaborationRequest(incoming())
+        && incoming().ownerId == request.auth.uid
+        && incoming().status == 'Open'
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+      allow update: if isVerified()
+        && isValidId(requestId)
+        && isValidCollaborationRequest(incoming())
+        && existing().ownerId == request.auth.uid
+        && incoming().ownerId == existing().ownerId
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && incoming().diff(existing()).affectedKeys().hasOnly([
+          'title', 'description', 'skillsNeeded', 'projectName', 'projectUrl', 'collaborationType',
+          'status', 'ownerUsername', 'ownerDisplayName', 'ownerAvatarUrl', 'updatedAt'
+        ]);
+      allow delete: if isVerified()
+        && isValidId(requestId)
+        && existing().ownerId == request.auth.uid;
+    }
+
+    // Private collaboration applications
+    match /collaboration_applications/{applicationId} {
+      allow get, list: if isVerified()
+        && (existing().applicantId == request.auth.uid || existing().opportunityOwnerId == request.auth.uid);
+      allow create: if isVerified()
+        && isValidId(applicationId)
+        && applicationId == (incoming().requestId + '_' + request.auth.uid)
+        && isValidCollaborationApplication(incoming())
+        && incoming().applicantId == request.auth.uid
+        && incoming().status == 'Pending'
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time
+        && exists(/databases/$(database)/documents/collaboration_requests/$(incoming().requestId))
+        && get(/databases/$(database)/documents/collaboration_requests/$(incoming().requestId)).data.ownerId == incoming().opportunityOwnerId
+        && get(/databases/$(database)/documents/collaboration_requests/$(incoming().requestId)).data.status == 'Open'
+        && incoming().opportunityOwnerId != request.auth.uid;
+      allow update: if isVerified()
+        && isValidId(applicationId)
+        && isValidCollaborationApplication(incoming())
+        && existing().opportunityOwnerId == request.auth.uid
+        && existing().status == 'Pending'
+        && (incoming().status == 'Accepted' || incoming().status == 'Rejected')
+        && incoming().requestId == existing().requestId
+        && incoming().opportunityOwnerId == existing().opportunityOwnerId
+        && incoming().applicantId == existing().applicantId
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt']);
+      allow delete: if isVerified()
+        && isValidId(applicationId)
+        && existing().applicantId == request.auth.uid
+        && existing().status == 'Pending';
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "Ship Together",
+  "description": "Connect. Hang Out. Build & Ship Together. A global developer community to share progress, showcase projects, and find collaborators.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,172 @@
+{
+  "entities": {
+    "Profile": {
+      "title": "Profile",
+      "description": "Public developer profile without private PII.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "username": { "type": "string", "minLength": 3, "maxLength": 30, "pattern": "^[a-z0-9_]+$" },
+        "displayName": { "type": "string", "minLength": 1, "maxLength": 60 },
+        "avatarUrl": { "type": "string", "maxLength": 280000 },
+        "bio": { "type": "string", "maxLength": 400 },
+        "location": { "type": "string", "maxLength": 80 },
+        "skills": { "type": "array", "description": "Up to 15 skill tags." },
+        "githubUrl": { "type": "string", "maxLength": 300 },
+        "portfolioUrl": { "type": "string", "maxLength": 300 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "username", "displayName", "avatarUrl", "bio", "location", "skills", "githubUrl", "portfolioUrl", "createdAt", "updatedAt"]
+    },
+    "UsernameClaim": {
+      "title": "UsernameClaim",
+      "description": "Maps unique lowercase username to userId.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "createdAt"]
+    },
+    "Post": {
+      "title": "Post",
+      "description": "Short community update (max 5 lines).",
+      "type": "object",
+      "properties": {
+        "authorId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "authorUsername": { "type": "string", "minLength": 3, "maxLength": 30 },
+        "authorDisplayName": { "type": "string", "minLength": 1, "maxLength": 60 },
+        "authorAvatarUrl": { "type": "string", "maxLength": 280000 },
+        "content": { "type": "string", "minLength": 1, "maxLength": 600 },
+        "projectUrl": { "type": "string", "maxLength": 300 },
+        "likesCount": { "type": "integer" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["authorId", "authorUsername", "authorDisplayName", "authorAvatarUrl", "content", "projectUrl", "likesCount", "createdAt", "updatedAt"]
+    },
+    "PostLike": {
+      "title": "PostLike",
+      "description": "Single user like record on a post.",
+      "type": "object",
+      "properties": {
+        "postId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "userId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["postId", "userId", "createdAt"]
+    },
+    "PostComment": {
+      "title": "PostComment",
+      "description": "Comment on a community post.",
+      "type": "object",
+      "properties": {
+        "postId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "authorId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "authorUsername": { "type": "string", "minLength": 3, "maxLength": 30 },
+        "authorDisplayName": { "type": "string", "minLength": 1, "maxLength": 60 },
+        "authorAvatarUrl": { "type": "string", "maxLength": 280000 },
+        "content": { "type": "string", "minLength": 1, "maxLength": 500 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["postId", "authorId", "authorUsername", "authorDisplayName", "authorAvatarUrl", "content", "createdAt"]
+    },
+    "Project": {
+      "title": "Project",
+      "description": "Showcased developer project.",
+      "type": "object",
+      "properties": {
+        "ownerId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "ownerUsername": { "type": "string", "minLength": 3, "maxLength": 30 },
+        "ownerDisplayName": { "type": "string", "minLength": 1, "maxLength": 60 },
+        "ownerAvatarUrl": { "type": "string", "maxLength": 280000 },
+        "name": { "type": "string", "minLength": 2, "maxLength": 100 },
+        "description": { "type": "string", "minLength": 10, "maxLength": 600 },
+        "coverImageUrl": { "type": "string", "maxLength": 280000 },
+        "liveDemoUrl": { "type": "string", "maxLength": 300 },
+        "githubUrl": { "type": "string", "maxLength": 300 },
+        "tags": { "type": "array", "description": "Up to 8 technology tags." },
+        "status": { "type": "string", "enum": ["Building", "Launched", "Completed"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["ownerId", "ownerUsername", "ownerDisplayName", "ownerAvatarUrl", "name", "description", "coverImageUrl", "liveDemoUrl", "githubUrl", "tags", "status", "createdAt", "updatedAt"]
+    },
+    "CollaborationRequest": {
+      "title": "CollaborationRequest",
+      "description": "Published collaboration opportunity seeking teammates.",
+      "type": "object",
+      "properties": {
+        "ownerId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "ownerUsername": { "type": "string", "minLength": 3, "maxLength": 30 },
+        "ownerDisplayName": { "type": "string", "minLength": 1, "maxLength": 60 },
+        "ownerAvatarUrl": { "type": "string", "maxLength": 280000 },
+        "title": { "type": "string", "minLength": 3, "maxLength": 120 },
+        "description": { "type": "string", "minLength": 10, "maxLength": 1200 },
+        "skillsNeeded": { "type": "array", "description": "Up to 10 needed skills." },
+        "projectName": { "type": "string", "maxLength": 100 },
+        "projectUrl": { "type": "string", "maxLength": 300 },
+        "collaborationType": { "type": "string", "enum": ["Open Source", "Startup", "Side Project", "Learning Together"] },
+        "status": { "type": "string", "enum": ["Open", "Closed"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["ownerId", "ownerUsername", "ownerDisplayName", "ownerAvatarUrl", "title", "description", "skillsNeeded", "projectName", "projectUrl", "collaborationType", "status", "createdAt", "updatedAt"]
+    },
+    "CollaborationApplication": {
+      "title": "CollaborationApplication",
+      "description": "Private application from a member to join a collaboration opportunity.",
+      "type": "object",
+      "properties": {
+        "requestId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "requestTitle": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "opportunityOwnerId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "applicantId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "applicantUsername": { "type": "string", "minLength": 3, "maxLength": 30 },
+        "applicantDisplayName": { "type": "string", "minLength": 1, "maxLength": 60 },
+        "applicantAvatarUrl": { "type": "string", "maxLength": 280000 },
+        "message": { "type": "string", "minLength": 10, "maxLength": 600 },
+        "skills": { "type": "array", "description": "Up to 10 skills." },
+        "status": { "type": "string", "enum": ["Pending", "Accepted", "Rejected"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["requestId", "requestTitle", "opportunityOwnerId", "applicantId", "applicantUsername", "applicantDisplayName", "applicantAvatarUrl", "message", "skills", "status", "createdAt", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/profiles/{userId}": {
+      "schema": { "$ref": "#/entities/Profile" },
+      "description": "Public developer profiles keyed by auth UID."
+    },
+    "/usernames/{username}": {
+      "schema": { "$ref": "#/entities/UsernameClaim" },
+      "description": "Username uniqueness registry."
+    },
+    "/posts/{postId}": {
+      "schema": { "$ref": "#/entities/Post" },
+      "description": "Community feed posts."
+    },
+    "/posts/{postId}/likes/{userId}": {
+      "schema": { "$ref": "#/entities/PostLike" },
+      "description": "Unique like per user per post."
+    },
+    "/posts/{postId}/comments/{commentId}": {
+      "schema": { "$ref": "#/entities/PostComment" },
+      "description": "Comments belonging to a post."
+    },
+    "/projects/{projectId}": {
+      "schema": { "$ref": "#/entities/Project" },
+      "description": "Showcased developer projects."
+    },
+    "/collaboration_requests/{requestId}": {
+      "schema": { "$ref": "#/entities/CollaborationRequest" },
+      "description": "Collaboration opportunities."
+    },
+    "/collaboration_applications/{applicationId}": {
+      "schema": { "$ref": "#/entities/CollaborationApplication" },
+      "description": "Private applications visible only to applicant and opportunity owner."
+    }
+  }
+}
