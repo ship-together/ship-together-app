@@ -105,23 +105,23 @@ export function AuthPage() {
 
   return (
     <div className="max-w-[1200px] mx-auto px-4 sm:px-6 py-12 sm:py-20">
-      <div className="max-w-md mx-auto bg-[#171714] border border-[#292923] rounded-xl p-6 sm:p-8">
+      <div className="max-w-md mx-auto bg-[#111114] border border-white/10 rounded-xl p-6 sm:p-8">
         <div className="text-center">
-          <div className="w-14 h-14 mx-auto mb-4 rounded-full overflow-hidden border border-[#292923] bg-white flex items-center justify-center">
+          <div className="w-14 h-14 mx-auto mb-4 rounded-full overflow-hidden border border-white/10 bg-white flex items-center justify-center">
             <img
               src={APP_LOGO_URL}
               alt="Ship Together logo"
               className="w-full h-full object-cover scale-[1.26]"
             />
           </div>
-          <h1 className="font-display text-2xl font-bold text-white tracking-tight">
+          <h1 className="font-display text-2xl font-bold text-[#FAFAFA] tracking-tight">
             {mode === 'login'
               ? 'Welcome back'
               : mode === 'signup'
                 ? 'Join Ship Together'
                 : 'Reset your password'}
           </h1>
-          <p className="mt-2 text-sm text-[#A3A3A3]">
+          <p className="mt-2 text-sm text-[#A1A1AA]">
             {mode === 'login'
               ? 'Email & password login is available below, or continue with Google.'
               : mode === 'signup'
@@ -131,14 +131,14 @@ export function AuthPage() {
         </div>
 
         {/* Mode Segmented Control */}
-        <div className="mt-6 grid grid-cols-3 gap-1 p-1 rounded-lg bg-[#090909] border border-[#292923]">
+        <div className="mt-6 grid grid-cols-3 gap-1 p-1 rounded-lg bg-[#09090B] border border-white/10">
           <button
             type="button"
             onClick={() => switchMode('login')}
             className={`py-2 text-xs font-medium rounded-md transition-colors ${
               mode === 'login'
-                ? 'bg-[#292923] text-white'
-                : 'text-[#A3A3A3] hover:text-white'
+                ? 'bg-[#27272A] text-[#FAFAFA]'
+                : 'text-[#A1A1AA] hover:text-[#FAFAFA]'
             }`}
           >
             Log In
@@ -148,8 +148,8 @@ export function AuthPage() {
             onClick={() => switchMode('signup')}
             className={`py-2 text-xs font-medium rounded-md transition-colors ${
               mode === 'signup'
-                ? 'bg-[#292923] text-white'
-                : 'text-[#A3A3A3] hover:text-white'
+                ? 'bg-[#27272A] text-[#FAFAFA]'
+                : 'text-[#A1A1AA] hover:text-[#FAFAFA]'
             }`}
           >
             Sign Up
@@ -159,8 +159,8 @@ export function AuthPage() {
             onClick={() => switchMode('reset')}
             className={`py-2 text-xs font-medium rounded-md transition-colors ${
               mode === 'reset'
-                ? 'bg-[#292923] text-white'
-                : 'text-[#A3A3A3] hover:text-white'
+                ? 'bg-[#27272A] text-[#FAFAFA]'
+                : 'text-[#A1A1AA] hover:text-[#FAFAFA]'
             }`}
           >
             Reset
@@ -173,7 +173,7 @@ export function AuthPage() {
               type="button"
               disabled={submitting}
               onClick={handleGoogleSignIn}
-              className="w-full flex items-center justify-center gap-2.5 px-4 py-2.5 rounded-lg bg-white text-[#090909] text-sm font-semibold hover:bg-white/90 disabled:opacity-50 transition-colors"
+              className="w-full flex items-center justify-center gap-2.5 px-4 py-2.5 rounded-lg border border-white/10 bg-[#27272A]/80 text-[#FAFAFA] text-sm font-semibold hover:bg-[#27272A] disabled:opacity-50 transition-colors"
             >
               <svg className="w-4 h-4" viewBox="0 0 24 24" aria-hidden="true">
                 <path
@@ -198,10 +198,10 @@ export function AuthPage() {
 
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-[#292923]" />
+                <div className="w-full border-t border-white/10" />
               </div>
               <div className="relative flex justify-center text-xs">
-                <span className="bg-[#171714] px-3 text-[#A3A3A3]">or with email &amp; password</span>
+                <span className="bg-[#111114] px-3 text-[#A1A1AA]">or with email &amp; password</span>
               </div>
             </div>
           </div>
@@ -210,7 +210,7 @@ export function AuthPage() {
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
           {mode === 'signup' && (
             <div>
-              <label htmlFor="auth-display-name" className="block text-xs font-medium text-[#A3A3A3] mb-1.5">
+              <label htmlFor="auth-display-name" className="block text-xs font-medium text-[#A1A1AA] mb-1.5">
                 Display Name
               </label>
               <input
@@ -221,17 +221,17 @@ export function AuthPage() {
                 placeholder="Alex Rivera"
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
-                className="w-full rounded-lg bg-[#090909] border border-[#292923] px-3.5 py-2.5 text-sm text-white placeholder-[#A3A3A3]/50 focus:border-[#F59E0B] focus:outline-none"
+                className="w-full rounded-lg bg-[#09090B] border border-white/10 px-3.5 py-2.5 text-sm text-[#FAFAFA] placeholder-[#A1A1AA]/50 focus:border-white/40 focus:outline-none"
               />
             </div>
           )}
 
           <div>
-            <label htmlFor="auth-email" className="block text-xs font-medium text-[#A3A3A3] mb-1.5">
+            <label htmlFor="auth-email" className="block text-xs font-medium text-[#A1A1AA] mb-1.5">
               Email Address
             </label>
             <div className="relative">
-              <Mail className="w-4 h-4 text-[#A3A3A3] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <Mail className="w-4 h-4 text-[#A1A1AA] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 id="auth-email"
                 type="email"
@@ -240,18 +240,18 @@ export function AuthPage() {
                 placeholder="you@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-lg bg-[#090909] border border-[#292923] pl-10 pr-3.5 py-2.5 text-sm text-white placeholder-[#A3A3A3]/50 focus:border-[#F59E0B] focus:outline-none"
+                className="w-full rounded-lg bg-[#09090B] border border-white/10 pl-10 pr-3.5 py-2.5 text-sm text-[#FAFAFA] placeholder-[#A1A1AA]/50 focus:border-white/40 focus:outline-none"
               />
             </div>
           </div>
 
           {mode !== 'reset' && (
             <div>
-              <label htmlFor="auth-password" className="block text-xs font-medium text-[#A3A3A3] mb-1.5">
+              <label htmlFor="auth-password" className="block text-xs font-medium text-[#A1A1AA] mb-1.5">
                 Password
               </label>
               <div className="relative">
-                <KeyRound className="w-4 h-4 text-[#A3A3A3] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <KeyRound className="w-4 h-4 text-[#A1A1AA] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                 <input
                   id="auth-password"
                   type="password"
@@ -261,7 +261,7 @@ export function AuthPage() {
                   placeholder="Minimum 6 characters"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full rounded-lg bg-[#090909] border border-[#292923] pl-10 pr-3.5 py-2.5 text-sm text-white placeholder-[#A3A3A3]/50 focus:border-[#F59E0B] focus:outline-none"
+                  className="w-full rounded-lg bg-[#09090B] border border-white/10 pl-10 pr-3.5 py-2.5 text-sm text-[#FAFAFA] placeholder-[#A1A1AA]/50 focus:border-white/40 focus:outline-none"
                 />
               </div>
             </div>
@@ -279,7 +279,7 @@ export function AuthPage() {
           {successNotice && (
             <div
               role="status"
-              className="rounded-lg bg-emerald-500/10 border border-emerald-500/30 px-3.5 py-2.5 text-xs text-emerald-300 flex items-start gap-2 leading-relaxed"
+              className="rounded-lg bg-[#10B981]/10 border border-[#10B981]/30 px-3.5 py-2.5 text-xs text-[#10B981] flex items-start gap-2 leading-relaxed"
             >
               <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />
               <span>{successNotice}</span>
@@ -289,7 +289,7 @@ export function AuthPage() {
           <button
             type="submit"
             disabled={submitting}
-            className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#F59E0B] text-[#090909] text-sm font-semibold hover:bg-[#F59E0B]/90 disabled:opacity-50 transition-colors"
+            className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#FAFAFA] text-[#09090B] text-sm font-semibold hover:bg-[#FAFAFA]/90 disabled:opacity-50 transition-colors"
           >
             {submitting
               ? 'Please wait...'

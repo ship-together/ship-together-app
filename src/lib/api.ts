@@ -11,6 +11,7 @@ import {
   orderBy,
   query,
   serverTimestamp,
+  setDoc,
   updateDoc,
   where,
   writeBatch,
@@ -1062,3 +1063,165 @@ export async function withdrawCollaborationApplication(applicationId: string): P
     handleFirestoreError(err, OperationType.DELETE, path);
   }
 }
+
+export interface StarterCollaborationSeed {
+  id: string;
+  title: string;
+  description: string;
+  skillsNeeded: string[];
+  projectName: string;
+  projectUrl: string;
+  collaborationType: CollaborationType;
+  status: CollaborationStatus;
+}
+
+export const STARTER_COLLABORATION_SEEDS: StarterCollaborationSeed[] = [
+  {
+    id: 'starter_collab_cli_ui',
+    title: 'Looking for a frontend collaborator for open-source CLI UI',
+    description:
+      'Building a minimal web companion for terminal build logs and diff snapshots. Looking for help polishing keyboard navigation, responsive spacing, and log filtering.',
+    skillsNeeded: ['TypeScript', 'UI Design'],
+    projectName: 'Community Builds',
+    projectUrl: 'https://github.com/ship-together/community-builds',
+    collaborationType: 'Open Source',
+    status: 'Open',
+  },
+  {
+    id: 'starter_collab_side_ui_review',
+    title: 'Weekend pair for UI flow review & usability testing',
+    description:
+      'Wrapping up an offline-first changelog editor this weekend. Looking for a builder to walk through onboarding flows, catch mobile edge cases, and pair on UI polish.',
+    skillsNeeded: ['React', 'Tailwind CSS', 'UI/UX'],
+    projectName: 'RelayNotes',
+    projectUrl: 'https://github.com/ship-together/relay-notes',
+    collaborationType: 'Side Project',
+    status: 'Open',
+  },
+  {
+    id: 'starter_collab_learning_solidity',
+    title: 'Solidity & Next.js smart contract study build',
+    description:
+      'Practicing EVM contract testing and wallet signature flows around an active security scanner build. Two short async check-ins per week plus PR walkthroughs.',
+    skillsNeeded: ['Solidity', 'Next.js', 'TypeScript'],
+    projectName: 'SolGuard Lab',
+    projectUrl: 'https://github.com/ship-together/solguard-lab',
+    collaborationType: 'Learning Together',
+    status: 'Open',
+  },
+  {
+    id: 'starter_collab_startup_hooks',
+    title: 'Backend partner for webhook retries & Postgres queue',
+    description:
+      'Early developer tool for reliable webhook delivery, signature checks, and dead-letter inspection. Looking for someone to benchmark Postgres worker throughput.',
+    skillsNeeded: ['Node.js', 'PostgreSQL', 'TypeScript'],
+    projectName: 'HookPipe',
+    projectUrl: 'https://github.com/ship-together/hookpipe',
+    collaborationType: 'Startup',
+    status: 'Open',
+  },
+  {
+    id: 'starter_collab_closed_docs',
+    title: 'Docs contributor for CLI quickstart & environment guide',
+    description:
+      'Role filled — restructured installation commands, environment variable templates, and local setup instructions.',
+    skillsNeeded: ['Markdown', 'CLI', 'Documentation'],
+    projectName: 'ShipKit Docs',
+    projectUrl: 'https://github.com/ship-together/shipkit-docs',
+    collaborationType: 'Open Source',
+    status: 'Closed',
+  },
+];
+
+const COLLAB_STARTER_SEED_KEY = 'ship_together_collab_starter_seeded_v1';
+let starterCollabSeedPromise: Promise<boolean> | null = null;
+
+export async function ensureStarterCollaborationRequests(owner: Profile): Promise<boolean> {
+  if (typeof window !== 'undefined') {
+    try {
+      if (window.localStorage.getItem(COLLAB_STARTER_SEED_KEY) === '1') {
+        return false;
+      }
+    } catch {
+      // ignore storage errors
+    }
+  }
+
+  if (starterCollabSeedPromise) {
+    return starterCollabSeedPromise;
+  }
+
+  starterCollabSeedPromise = (async () => {
+    try {
+      const existingSnap = await getDocs(
+        query(collection(db, 'collaboration_requests'), limit(60))
+      );
+
+      const existingIds = new Set<string>();
+      const existingTitles = new Set<string>();
+      existingSnap.docs.forEach((d) => {
+        existingIds.add(d.id);
+        const data = d.data() as Partial<CollaborationRequest>;
+        if (typeof data.title === 'string') {
+          existingTitles.add(data.title.trim().toLowerCase());
+        }
+      });
+
+      const avatar = isSafeImageUrl(owner.avatarUrl) ? owner.avatarUrl : '';
+      let createdAny = false;
+
+      for (const seed of STARTER_COLLABORATION_SEEDS) {
+        const normalizedTitle = seed.title.trim().toLowerCase();
+        if (existingIds.has(seed.id) || existingTitles.has(normalizedTitle)) {
+          continue;
+        }
+
+        const docRef = doc(db, 'collaboration_requests', seed.id);
+        await setDoc(docRef, {
+          ownerId: owner.userId,
+          ownerUsername: owner.username,
+          ownerDisplayName: owner.displayName.slice(0, 60),
+          ownerAvatarUrl: avatar,
+          title: seed.title.slice(0, 120),
+          description: seed.description.slice(0, 1200),
+          skillsNeeded: seed.skillsNeeded.slice(0, 10),
+          projectName: seed.projectName.slice(0, 100),
+          projectUrl: seed.projectUrl.slice(0, 300),
+          collaborationType: seed.collaborationType,
+          status: 'Open' as CollaborationStatus,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        });
+
+        if (seed.status === 'Closed') {
+          await updateDoc(docRef, {
+            status: 'Closed' as CollaborationStatus,
+            updatedAt: serverTimestamp(),
+          });
+        }
+
+        existingIds.add(seed.id);
+        existingTitles.add(normalizedTitle);
+        createdAny = true;
+      }
+
+      if (typeof window !== 'undefined') {
+        try {
+          window.localStorage.setItem(COLLAB_STARTER_SEED_KEY, '1');
+        } catch {
+          // ignore storage errors
+        }
+      }
+
+      return createdAny;
+    } catch (err) {
+      console.warn('Starter collaboration seeding skipped:', err);
+      return false;
+    } finally {
+      starterCollabSeedPromise = null;
+    }
+  })();
+
+  return starterCollabSeedPromise;
+}
+

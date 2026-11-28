@@ -36,16 +36,16 @@ export function VerificationBanner() {
   };
 
   return (
-    <div className="bg-[#171714] border-b border-[#F59E0B]/40">
+    <div className="bg-[#111114] border-b border-white/10">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-start sm:items-center gap-3 text-sm">
-          <MailCheck className="w-4 h-4 text-[#F59E0B] shrink-0 mt-0.5 sm:mt-0" />
+          <MailCheck className="w-4 h-4 text-[#FAFAFA] shrink-0 mt-0.5 sm:mt-0" />
           <div>
-            <span className="text-white font-medium">Verify your email ({user.email})</span>
-            <span className="text-[#A3A3A3]">
+            <span className="text-[#FAFAFA] font-medium">Verify your email ({user.email})</span>
+            <span className="text-[#A1A1AA]">
               {' '}to publish posts, showcase projects, and apply to collaborate.
             </span>
-            {statusMsg && <p className="text-xs text-[#F59E0B] mt-1">{statusMsg}</p>}
+            {statusMsg && <p className="text-xs text-[#A1A1AA] mt-1">{statusMsg}</p>}
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
@@ -53,7 +53,7 @@ export function VerificationBanner() {
             type="button"
             disabled={busy}
             onClick={handleRefresh}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#F59E0B] text-[#090909] text-xs font-semibold hover:bg-[#F59E0B]/90 disabled:opacity-50 transition-colors whitespace-nowrap"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#FAFAFA] text-[#09090B] text-xs font-semibold hover:bg-[#FAFAFA]/90 disabled:opacity-50 transition-colors whitespace-nowrap"
           >
             <RefreshCw className="w-3.5 h-3.5" />
             I&apos;ve Verified
@@ -62,7 +62,7 @@ export function VerificationBanner() {
             type="button"
             disabled={busy}
             onClick={handleResend}
-            className="px-3 py-1.5 rounded-lg border border-[#292923] text-xs font-medium text-white hover:bg-[#292923] disabled:opacity-50 transition-colors whitespace-nowrap"
+            className="px-3 py-1.5 rounded-lg border border-white/10 bg-[#27272A]/60 text-xs font-medium text-[#FAFAFA] hover:bg-[#27272A] disabled:opacity-50 transition-colors whitespace-nowrap"
           >
             Resend Email
           </button>

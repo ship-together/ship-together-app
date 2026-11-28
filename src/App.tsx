@@ -17,7 +17,7 @@ export default function App() {
     <ErrorBoundary>
       <AuthProvider>
         <BrowserRouter>
-          <div className="min-h-screen flex flex-col bg-[#090909] text-white">
+          <div className="min-h-screen flex flex-col bg-[#09090B] text-[#FAFAFA]">
             <Navbar />
             <VerificationBanner />
             <main className="flex-1">

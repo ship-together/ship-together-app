@@ -25,14 +25,14 @@ export function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-[#090909]/95 backdrop-blur-md border-b border-[#292923]">
+    <header className="sticky top-0 z-40 bg-[#09090B]/95 backdrop-blur-md border-b border-white/10">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-8">
         {/* Zone 1: Brand logo + wordmark */}
         <Link
           to="/"
-          className="flex items-center gap-2.5 font-display text-lg font-bold tracking-tight text-white whitespace-nowrap shrink-0 hover:text-[#F59E0B] transition-colors"
+          className="flex items-center gap-2.5 font-display text-lg font-bold tracking-tight text-[#FAFAFA] whitespace-nowrap shrink-0 hover:text-[#A1A1AA] transition-colors"
         >
-          <span className="w-8 h-8 rounded-full overflow-hidden border border-[#292923] bg-white shrink-0 flex items-center justify-center">
+          <span className="w-8 h-8 rounded-full overflow-hidden border border-white/10 bg-white shrink-0 flex items-center justify-center">
             <img
               src={APP_LOGO_URL}
               alt="Ship Together logo"
@@ -55,8 +55,8 @@ export function Navbar() {
               className={({ isActive }) =>
                 `whitespace-nowrap shrink-0 py-1 border-b-2 transition-colors ${
                   isActive
-                    ? 'text-white border-[#F59E0B]'
-                    : 'text-[#A3A3A3] border-transparent hover:text-white'
+                    ? 'text-[#FAFAFA] border-[#FAFAFA]'
+                    : 'text-[#A1A1AA] border-transparent hover:text-[#FAFAFA]'
                 }`
               }
             >
@@ -71,14 +71,14 @@ export function Navbar() {
             <div className="flex items-center gap-3">
               <Link
                 to="/profile"
-                className="flex items-center gap-2 text-sm text-[#A3A3A3] hover:text-white transition-colors whitespace-nowrap shrink-0"
+                className="flex items-center gap-2 text-sm text-[#A1A1AA] hover:text-[#FAFAFA] transition-colors whitespace-nowrap shrink-0"
               >
                 <SafeImage
                   src={profile?.avatarUrl}
                   alt={profile?.displayName || 'Profile'}
                   fallbackLabel={profile?.displayName || user.email || 'User'}
                   variant="avatar"
-                  className="w-7 h-7 rounded-full object-cover border border-[#292923]"
+                  className="w-7 h-7 rounded-full object-cover border border-white/10"
                 />
                 <span className="max-w-[120px] truncate">
                   {profile?.username ? `@${profile.username}` : 'Account'}
@@ -87,7 +87,7 @@ export function Navbar() {
               <button
                 type="button"
                 onClick={handleLogout}
-                className="px-3.5 py-1.5 rounded-lg border border-[#292923] text-xs font-medium text-[#A3A3A3] hover:text-white hover:border-[#A3A3A3]/40 transition-colors whitespace-nowrap shrink-0"
+                className="px-3.5 py-1.5 rounded-lg border border-white/10 bg-[#111114] text-xs font-medium text-[#A1A1AA] hover:text-[#FAFAFA] hover:bg-[#27272A] transition-colors whitespace-nowrap shrink-0"
               >
                 Log Out
               </button>
@@ -95,7 +95,7 @@ export function Navbar() {
           ) : (
             <Link
               to="/auth"
-              className="px-4 py-2 rounded-lg bg-[#F59E0B] text-[#090909] text-sm font-semibold hover:bg-[#F59E0B]/90 transition-colors whitespace-nowrap shrink-0"
+              className="px-4 py-2 rounded-lg bg-[#FAFAFA] text-[#09090B] text-sm font-semibold hover:bg-[#FAFAFA]/90 transition-colors whitespace-nowrap shrink-0"
             >
               Sign Up / Log In
             </Link>
@@ -108,7 +108,7 @@ export function Navbar() {
           aria-label={mobileOpen ? 'Close navigation menu' : 'Open navigation menu'}
           aria-expanded={mobileOpen}
           onClick={() => setMobileOpen((prev) => !prev)}
-          className="md:hidden p-2 rounded-lg text-[#A3A3A3] hover:text-white hover:bg-[#171714] transition-colors"
+          className="md:hidden p-2 rounded-lg text-[#A1A1AA] hover:text-[#FAFAFA] hover:bg-[#111114] transition-colors"
         >
           {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
@@ -116,7 +116,7 @@ export function Navbar() {
 
       {/* Mobile navigation drawer */}
       {mobileOpen && (
-        <div className="md:hidden border-t border-[#292923] bg-[#090909] px-4 py-4 space-y-2">
+        <div className="md:hidden border-t border-white/10 bg-[#09090B] px-4 py-4 space-y-2">
           <nav aria-label="Mobile navigation" className="flex flex-col gap-1">
             {NAV_ITEMS.map((item) => (
               <NavLink
@@ -127,8 +127,8 @@ export function Navbar() {
                 className={({ isActive }) =>
                   `px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                     isActive
-                      ? 'bg-[#171714] text-[#F59E0B]'
-                      : 'text-[#A3A3A3] hover:text-white hover:bg-[#171714]'
+                      ? 'bg-[#27272A] text-[#FAFAFA]'
+                      : 'text-[#A1A1AA] hover:text-[#FAFAFA] hover:bg-[#111114]'
                   }`
                 }
               >
@@ -136,12 +136,12 @@ export function Navbar() {
               </NavLink>
             ))}
           </nav>
-          <div className="pt-3 border-t border-[#292923]">
+          <div className="pt-3 border-t border-white/10">
             {user ? (
               <button
                 type="button"
                 onClick={handleLogout}
-                className="w-full px-4 py-2.5 rounded-lg border border-[#292923] text-sm font-medium text-white hover:bg-[#171714] transition-colors"
+                className="w-full px-4 py-2.5 rounded-lg border border-white/10 bg-[#111114] text-sm font-medium text-[#FAFAFA] hover:bg-[#27272A] transition-colors"
               >
                 Log Out
               </button>
@@ -149,7 +149,7 @@ export function Navbar() {
               <Link
                 to="/auth"
                 onClick={() => setMobileOpen(false)}
-                className="block text-center w-full px-4 py-2.5 rounded-lg bg-[#F59E0B] text-[#090909] text-sm font-semibold hover:bg-[#F59E0B]/90 transition-colors"
+                className="block text-center w-full px-4 py-2.5 rounded-lg bg-[#FAFAFA] text-[#09090B] text-sm font-semibold hover:bg-[#FAFAFA]/90 transition-colors"
               >
                 Sign Up / Log In
               </Link>

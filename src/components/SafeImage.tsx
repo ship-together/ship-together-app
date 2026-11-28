@@ -35,7 +35,7 @@ export function SafeImage({
       return (
         <div
           aria-label={alt}
-          className={`flex items-center justify-center bg-[#292923] text-[#F59E0B] font-semibold select-none ${className}`}
+          className={`flex items-center justify-center bg-[#27272A] text-[#FAFAFA] font-semibold select-none ${className}`}
         >
           <span className="text-xs tracking-wide">{getInitials(fallbackLabel || alt)}</span>
         </div>
@@ -45,11 +45,11 @@ export function SafeImage({
     return (
       <div
         aria-label={alt}
-        className={`flex flex-col items-center justify-center bg-gradient-to-br from-[#171714] via-[#292923]/60 to-[#090909] text-[#A3A3A3] select-none p-6 ${className}`}
+        className={`flex flex-col items-center justify-center bg-gradient-to-br from-[#16161B] via-[#1C1C22] to-[#101014] text-[#A1A1AA] select-none p-6 ${className}`}
       >
-        <Layers className="w-7 h-7 text-[#F59E0B]/70 mb-2" />
+        <Layers className="w-7 h-7 text-[#A1A1AA] mb-2" />
         {fallbackLabel && (
-          <span className="text-xs text-[#A3A3A3] text-center line-clamp-1 max-w-[200px]">
+          <span className="text-xs text-[#A1A1AA] text-center line-clamp-1 max-w-[200px]">
             {fallbackLabel}
           </span>
         )}
@@ -63,7 +63,9 @@ export function SafeImage({
       alt={alt}
       referrerPolicy="no-referrer"
       onError={() => setFailed(true)}
-      className={className}
+      className={
+        variant === 'cover' ? `bg-[#141418] object-top ${className}`.trim() : className
+      }
     />
   );
 }

@@ -4,24 +4,24 @@
   --font-display: "Outfit", ui-sans-serif, system-ui, sans-serif;
   --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
-  --color-obsidian: #090909;
-  --color-card: #171714;
-  --color-surface: #292923;
-  --color-amber-accent: #F59E0B;
-  --color-muted: #A3A3A3;
+  --color-obsidian: #09090B;
+  --color-card: #111114;
+  --color-surface: #27272A;
+  --color-emerald-live: #10B981;
+  --color-muted: #A1A1AA;
 }
 
 @layer base {
   html {
-    background-color: #090909;
-    color: #FFFFFF;
+    background-color: #09090B;
+    color: #FAFAFA;
     font-family: var(--font-sans);
     scroll-behavior: smooth;
   }
 
   body {
-    background-color: #090909;
-    color: #FFFFFF;
+    background-color: #09090B;
+    color: #FAFAFA;
     min-height: 100vh;
     letter-spacing: 0.005em;
   }
@@ -39,7 +39,7 @@
   }
 
   :focus-visible {
-    outline: 2px solid #F59E0B;
+    outline: 2px solid #FAFAFA;
     outline-offset: 2px;
   }
 }
